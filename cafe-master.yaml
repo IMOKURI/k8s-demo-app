@@ -1,0 +1,55 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: coffee-master
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coffee-master
+  namespace: coffee-master
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: coffee-master
+  template:
+    metadata:
+      labels:
+        app: coffee-master
+    spec:
+      containers:
+        - name: coffee-master
+          image: nginxdemos/nginx-hello:plain-text
+          ports:
+            - containerPort: 8080
+      tolerations:
+        - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                - key: node-role.kubernetes.io/master
+                  operator: Exists
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: coffee-master-svc
+  namespace: coffee-master
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app: coffee-master
+
