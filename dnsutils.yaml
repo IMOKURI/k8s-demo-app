@@ -1,15 +1,8 @@
 ---
 apiVersion: v1
-kind: Namespace
-metadata:
-  name: dnsutils
-
----
-apiVersion: v1
 kind: Pod
 metadata:
   name: dnsutils
-  namespace: dnsutils
 spec:
   containers:
   - name: dnsutils
@@ -19,4 +12,3 @@ spec:
       - infinity
     imagePullPolicy: IfNotPresent
   restartPolicy: Always
-
